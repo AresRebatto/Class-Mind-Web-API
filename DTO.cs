@@ -1,0 +1,1 @@
+public record StudenteDTO(string Nome, string Cognome);

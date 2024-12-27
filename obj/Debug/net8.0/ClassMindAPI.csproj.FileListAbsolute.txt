@@ -316,3 +316,4 @@ C:\Users\HP\Documents\Informatica\C#\Quinto anno\5H_WebAPI_RebattoA\obj\Debug\ne
 C:\Users\HP\Documents\Informatica\C#\Quinto anno\5H_WebAPI_RebattoA\obj\Debug\net8.0\ClassMindAPI.pdb
 C:\Users\HP\Documents\Informatica\C#\Quinto anno\5H_WebAPI_RebattoA\obj\Debug\net8.0\ClassMindAPI.genruntimeconfig.cache
 C:\Users\HP\Documents\Informatica\C#\Quinto anno\5H_WebAPI_RebattoA\obj\Debug\net8.0\ref\ClassMindAPI.dll
+C:\Users\HP\Documents\Informatica\C#\Quinto anno\5H_WebAPI_RebattoA\obj\Debug\net8.0\ClassMindAPI.sourcelink.json

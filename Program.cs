@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +23,7 @@ app.UseHttpsRedirection();
 
 
 
-app.MapGet("/studenti", (ClassMindContext context)=> context.Studenti)
+app.MapGet("/studenti", (ClassMindContext context)=> context.Studenti.Select(studente => new {nome = studente.Nome, cognome = studente.Cognome}))
 .WithName("lista-studenti")
 .WithOpenApi();
 
@@ -44,16 +45,63 @@ app.MapPost("/inserisci-studenti", (ClassMindContext context, List<StudenteDTO> 
 .WithOpenApi();
 
 
+app.MapPost("/modifica-studente/{studente_id:int}", (ClassMindContext context, StudenteDTO studente, int studente_id)=>{
+    if(!context.Studenti.Where(studente => studente.StudenteId == studente_id).Any())
+        return Results.NotFound("L'ID fornito non corrisponde a nessuno studente");
 
+    context.Studenti.Where(studente => studente.StudenteId == studente_id).ToList()[0].Nome = studente.Nome;
+    context.Studenti.Where(studente => studente.StudenteId == studente_id).ToList()[0].Cognome = studente.Cognome;
+
+    context.SaveChanges();
+    
+    return Results.Ok();
+})
+.WithName("modifica-studente")
+.WithOpenApi();
 app.MapPost("/aggiungi-materie", (ClassMindContext context, List<String> nomi)=>{
     context.Materie.AddRange(
         nomi.Select(nome => new Materia(){Nome = nome})
     );
 
     context.SaveChanges();
-    return context.Materie;
+    return context.Materie.Select(materia => new {nome=materia.Nome, lezioni = "Non impostate"});
 })
 .WithName("aggiungi-materie")
+.WithOpenApi();
+
+app.MapGet("/get-materie", (ClassMindContext context)=>{
+    return context.Materie
+                    .Include(materia => materia.Lezioni)
+                    .Include(materia => materia.Interrogazioni)
+                    .Select(materia=> new{
+                        id=materia.MateriaId, 
+                        nome=materia.Nome, 
+                        lezioni = materia.Lezioni
+                                            .Select(lezione => lezione.GiornoSettimana), 
+                        interrogazioni= materia.Interrogazioni.Select(interrogazione => 
+                            new {
+                                nome=$"{interrogazione.Studente.Nome} {interrogazione.Studente.Cognome}",
+                                data = interrogazione.Data
+                            }
+                        )
+                    });
+})
+.WithName("get-materie")
+.WithOpenApi();
+
+app.MapGet("/cancella-materia/{materia_id:int}", (ClassMindContext context, int materia_id)=>{
+    if(!context.Materie.Where(materia => materia.MateriaId == materia_id).Any())
+        return Results.NotFound("Materia non trovata");
+    context.Lezioni.RemoveRange(context.Lezioni.Where(lezione => lezione.Materia.MateriaId == materia_id));
+    context.Interrogazioni.RemoveRange(context.Interrogazioni.Where(interrogazione => interrogazione.Materia.MateriaId == materia_id));
+    
+    context.Materie.RemoveRange(context.Materie.Where(materia => materia.MateriaId == materia_id));
+    
+    context.SaveChanges();
+
+    return Results.Ok();
+})
+.WithName("cancella-materia")
 .WithOpenApi();
 
 
@@ -98,9 +146,11 @@ app.MapPost("/aggiungi-orario/{id_materia:int}", (ClassMindContext context, int 
 
 
 app.MapGet("/get-lezioni/{id_materia:int}", (ClassMindContext context, int id_materia)=>{
-    return context.Lezioni
+    if(!context.Materie.Where(materia => materia.MateriaId == id_materia).Any())
+        return Results.NotFound("Non esiste nessuna materia con l'ID specificato");
+    return Results.Ok(context.Lezioni
                     .Where(lezione => lezione.Materia.MateriaId == id_materia)
-                    .Select(lezione => new {giorno = lezione.GiornoSettimana, materia = lezione.Materia.Nome});
+                    .Select(lezione => new {giorno = lezione.GiornoSettimana, materia = lezione.Materia.Nome}));
 })
 .WithName("get-lezioni")
 .WithOpenApi();
@@ -136,7 +186,7 @@ app.MapGet(
                     lezione=> NumeroGiornoSettimana(lezione.GiornoSettimana)
                 ).ToList();
         }else{
-            return Results.BadRequest("La materia inserita non esiste o non ha lezioni");
+            return Results.NotFound("La materia inserita non esiste o non ha lezioni");
         }
 
         giorniInterrogazione.Sort();

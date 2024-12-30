@@ -23,7 +23,7 @@ app.UseHttpsRedirection();
 
 
 
-app.MapGet("/studenti", (ClassMindContext context)=> context.Studenti.Select(studente => new {nome = studente.Nome, cognome = studente.Cognome}))
+app.MapGet("/studenti", (ClassMindContext context)=> context.Studenti.Select(studente => new {id=studente.StudenteId, nome = studente.Nome, cognome = studente.Cognome}))
 .WithName("lista-studenti")
 .WithOpenApi();
 
@@ -45,7 +45,7 @@ app.MapPost("/inserisci-studenti", (ClassMindContext context, List<StudenteDTO> 
 .WithOpenApi();
 
 
-app.MapPost("/modifica-studente/{studente_id:int}", (ClassMindContext context, StudenteDTO studente, int studente_id)=>{
+app.MapPut("/modifica-studente/{studente_id:int}", (ClassMindContext context, StudenteDTO studente, int studente_id)=>{
     if(!context.Studenti.Where(studente => studente.StudenteId == studente_id).Any())
         return Results.NotFound("L'ID fornito non corrisponde a nessuno studente");
 
@@ -58,16 +58,37 @@ app.MapPost("/modifica-studente/{studente_id:int}", (ClassMindContext context, S
 })
 .WithName("modifica-studente")
 .WithOpenApi();
+
+app.MapDelete("/elimina-studente/{studente_id:int}", (ClassMindContext context, int studente_id)=>{
+    if(!context.Studenti.Where(studente => studente.StudenteId == studente_id).Any())
+        return Results.NotFound("L'ID fornito non corrisponde a nessuno studente");
+
+    context.Studenti.Remove(context.Studenti.Where(studente => studente.StudenteId == studente_id).ToList()[0]);
+
+    context.SaveChanges();
+    
+    return Results.Ok();
+})
+.WithName("elimina-studente")
+.WithOpenApi();
+
+
+
 app.MapPost("/aggiungi-materie", (ClassMindContext context, List<String> nomi)=>{
+    if(nomi.Any(nome => context.Materie.Any(materia => materia.Nome == nome)))
+        return Results.BadRequest("La materia e' gia' presente");
+    
     context.Materie.AddRange(
         nomi.Select(nome => new Materia(){Nome = nome})
     );
 
     context.SaveChanges();
-    return context.Materie.Select(materia => new {nome=materia.Nome, lezioni = "Non impostate"});
+    return Results.Ok(context.Materie.Select(materia => new {nome=materia.Nome, lezioni = "Non impostate"}));
 })
 .WithName("aggiungi-materie")
 .WithOpenApi();
+
+
 
 app.MapGet("/get-materie", (ClassMindContext context)=>{
     return context.Materie
@@ -89,7 +110,9 @@ app.MapGet("/get-materie", (ClassMindContext context)=>{
 .WithName("get-materie")
 .WithOpenApi();
 
-app.MapGet("/cancella-materia/{materia_id:int}", (ClassMindContext context, int materia_id)=>{
+
+
+app.MapDelete("/cancella-materia/{materia_id:int}", (ClassMindContext context, int materia_id)=>{
     if(!context.Materie.Where(materia => materia.MateriaId == materia_id).Any())
         return Results.NotFound("Materia non trovata");
     context.Lezioni.RemoveRange(context.Lezioni.Where(lezione => lezione.Materia.MateriaId == materia_id));
@@ -109,11 +132,6 @@ app.MapGet("/cancella-materia/{materia_id:int}", (ClassMindContext context, int 
 app.MapPost("/aggiungi-orario/{id_materia:int}", (ClassMindContext context, int id_materia, List<string> giorniSettimana)=>{
     
     List<string> giorniAmmissibili = new List<String>{"lun", "mar", "mer", "gio", "ven", "sab"};
-    
-    //Se la materia ha gia' delle lezioni, le cancella prima di generare le nuove
-    if(LaMateriaHaLezioni(context, id_materia)){
-        context.Lezioni.RemoveRange(context.Lezioni.Where(lezione => lezione.Materia.MateriaId == id_materia));
-    }
 
 
     //Verifica che i giorni della settimana siano dati nel formato come quello nella lista sopra
@@ -130,6 +148,11 @@ app.MapPost("/aggiungi-orario/{id_materia:int}", (ClassMindContext context, int 
         return Results.BadRequest("Materia non trovata");
     }
 
+    //Se la materia ha gia' delle lezioni, le cancella prima di generare le nuove
+    if(LaMateriaHaLezioni(context, id_materia)){
+        context.Lezioni.RemoveRange(context.Lezioni.Where(lezione => lezione.Materia.MateriaId == id_materia));
+    }
+
     var nuoveLezioni = giorniInMinuscolo
         .Select(g => new Lezione { GiornoSettimana = g, Materia = materia })
         .ToList();
@@ -141,6 +164,50 @@ app.MapPost("/aggiungi-orario/{id_materia:int}", (ClassMindContext context, int 
     return Results.Ok();
 })
 .WithName("aggiungi-orari")
+.WithOpenApi();
+
+
+app.MapPost("/aggiungi-materia-orario", (ClassMindContext context, List<LezioneEMateriaDTO> lez_mat)=>{
+    
+    List<string> giorniAmmissibili = new List<String>{"lun", "mar", "mer", "gio", "ven", "sab"};
+    
+    if(lez_mat.Any(lm => lm.GiorniSettimana.Any(giorno => !giorniAmmissibili.Contains(giorno.ToLower()))))
+        return Results.BadRequest("I giorni non sono stati dati in un formato accettato");
+    if(!lez_mat.Any(lm => !context.Materie.Any(materia => materia.Nome == lm.NomeMateria)))
+        return Results.BadRequest("La materia e' gia' presente");
+
+    foreach (var lm in lez_mat)
+    {
+        context.Materie.Add(new Materia
+        {
+            Nome = lm.NomeMateria
+        });
+    }
+
+    context.SaveChanges();
+
+    foreach (var lm in lez_mat)
+    {
+        foreach (var giorno in lm.GiorniSettimana)
+        {
+            var materia = context.Materie.FirstOrDefault(m => m.Nome == lm.NomeMateria);
+            if (materia != null)
+            {
+                context.Lezioni.Add(new Lezione
+                {
+                    GiornoSettimana = giorno.ToLower(),
+                    Materia = materia
+                });
+            }
+        }
+    }
+
+    context.SaveChanges();
+    
+    
+    return Results.Ok();
+})
+.WithName("aggiungi-materia-orario")
 .WithOpenApi();
 
 
@@ -262,7 +329,7 @@ int NumeroGiornoSettimana(string g){
         "sab"=> 6
     };
 }
-Materia TrovaMateria(int id_materia, ClassMindContext context) => context.Materie.Where(m => m.MateriaId == id_materia).ToList()[0];
+Materia TrovaMateria(int id_materia, ClassMindContext context) => context.Materie.Where(m => m.MateriaId == id_materia).Any()?context.Materie.Where(m => m.MateriaId == id_materia).ToList()[0]:null;
 string ProssimaInterrogazione(int todayWeekDay, List<int> giorniInterrogazione, int counterGiorno, int numeroInterrogazioniFatte) => DateTime.Today.AddDays((todayWeekDay < giorniInterrogazione[counterGiorno]?7+(giorniInterrogazione[counterGiorno]-todayWeekDay):7-(todayWeekDay-giorniInterrogazione[counterGiorno]))+(7*numeroInterrogazioniFatte)).ToString("dd/MM/yyyy");
 bool LaMateriaHaLezioni(ClassMindContext context, int id_materia) =>context.Lezioni.Where(lezione => lezione.Materia.MateriaId == id_materia) != null;
     

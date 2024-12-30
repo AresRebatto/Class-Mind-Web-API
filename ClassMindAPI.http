@@ -1,6 +1,234 @@
 @ClassMindAPI_HostAddress = http://localhost:5173
 
-GET {{ClassMindAPI_HostAddress}}/weatherforecast/
+POST {{ClassMindAPI_HostAddress}}/inserisci-studenti HTTP/1.1
+Content-Type: application/json
+
+[
+  {
+    "nome": "Ares",
+    "cognome": "Rabitto"
+  },
+  {
+    "nome": "Gabriele",
+    "cognome": "Abbruscato"
+  },
+  {
+    "nome": "Chiara",
+    "cognome": "Rossi"
+  },
+  {
+    "nome": "Marco",
+    "cognome": "Bianchi"
+  },
+  {
+    "nome": "Elena",
+    "cognome": "Verdi"
+  },
+  {
+    "nome": "Luca",
+    "cognome": "Ferrari"
+  },
+  {
+    "nome": "Giulia",
+    "cognome": "Ricci"
+  },
+  {
+    "nome": "Francesco",
+    "cognome": "Galli"
+  },
+  {
+    "nome": "Sara",
+    "cognome": "Martini"
+  },
+  {
+    "nome": "Andrea",
+    "cognome": "Magno"
+  },
+  {
+    "nome": "Mario",
+    "cognome": "Rossi"
+  }
+]
+###
+# Deve dare errore(studenti gia' esistenti)
+POST {{ClassMindAPI_HostAddress}}/inserisci-studenti HTTP/1.1
+Content-Type: application/json
+
+[
+  {
+    "nome": "Ares",
+    "cognome": "Rebatto"
+  },
+  {
+    "nome": "Federico",
+    "cognome": "Russo"
+  }
+]
+###
+PUT {{ClassMindAPI_HostAddress}}/modifica-studente/24 HTTP/1.1
+Content-Type: application/json
+
+{
+  "Nome": "Ares",
+  "Cognome": "Rebatto"
+}
+###
+#Deve dare errore(studente inesistente)
+PUT {{ClassMindAPI_HostAddress}}/modifica-studente/300 HTTP/1.1
+Content-Type: application/json
+
+{
+  "Nome": "Carlo",
+  "Cognome": "Magno"
+}
+###
+# Deve dare errore(studente inesistente)
+DELETE {{ClassMindAPI_HostAddress}}/elimina-studente/300 HTTP/1.1
+Content-Type: application/json
+
+###
+DELETE {{ClassMindAPI_HostAddress}}/elimina-studente/25 HTTP/1.1
+Content-Type: application/json
+###
+GET {{ClassMindAPI_HostAddress}}/studenti HTTP/1.1
+Accept: application/json 
+###
+POST {{ClassMindAPI_HostAddress}}/aggiungi-materie HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[
+  "matematica", 
+  "motoria"
+]
+###
+# Deve ritornare errore(materia gia' esistente)
+POST {{ClassMindAPI_HostAddress}}/aggiungi-materie HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[ 
+  "motoria"
+]
+
+###
+GET {{ClassMindAPI_HostAddress}}/get-materie HTTP/1.1
 Accept: application/json
 
 ###
+# Deve dare errore
+DELETE {{ClassMindAPI_HostAddress}}/cancella-materia/200 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+DELETE {{ClassMindAPI_HostAddress}}/cancella-materia/17 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+
+# Deve dare errore 
+POST {{ClassMindAPI_HostAddress}}/aggiungi-orario/2000 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[ 
+  "lun", "mar"
+]
+
+###
+
+# Deve dare errore 
+POST {{ClassMindAPI_HostAddress}}/aggiungi-orario/16 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[ 
+  "lun", "adc"
+]
+
+### 
+POST {{ClassMindAPI_HostAddress}}/aggiungi-orario/16 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[ 
+  "lun", "mar"
+]
+
+### 
+#Deve dare errore(Materia gia' esistente)
+POST {{ClassMindAPI_HostAddress}}/aggiungi-materia-orario HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[
+  {
+    "nomeMateria": "matematica",
+    "giorniSettimana": [
+      "lun"
+    ]
+  }
+]
+
+### 
+#Deve dare errore(Formato dei giorni non valido)
+POST {{ClassMindAPI_HostAddress}}/aggiungi-materia-orario HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[
+  {
+    "nomeMateria": "informatica LAB",
+    "giorniSettimana": [
+      "lun", "sdfv"
+    ]
+  }
+]
+
+###
+
+POST {{ClassMindAPI_HostAddress}}/aggiungi-materia-orario HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+[
+  {
+    "nomeMateria": "informatica LAB",
+    "giorniSettimana": [
+      "lun", "mar"
+    ]
+  }
+]
+
+###
+#deve dare errore(materia non trovata)
+GET {{ClassMindAPI_HostAddress}}/get-lezioni/2334 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+GET {{ClassMindAPI_HostAddress}}/get-lezioni/18 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+# Deve dare errore(materia non trovata)
+GET {{ClassMindAPI_HostAddress}}/get-lezioni/1323 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+GET {{ClassMindAPI_HostAddress}}/get-lezioni/18 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+###
+# Deve dare errore(troppi studenti interrogati giornalmente)
+GET {{ClassMindAPI_HostAddress}}/genera-programmate/18/2000 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+GET {{ClassMindAPI_HostAddress}}/genera-programmate/18/3 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+###
+GET {{ClassMindAPI_HostAddress}}/get-programmate/18 HTTP/1.1
+Accept: application/json
+Content-Type: application/json

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\ClassMindAPI.csproj": {}
+    "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\ClassMindAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\ClassMindAPI.csproj": {
+    "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\ClassMindAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\ClassMindAPI.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\ClassMindAPI.csproj",
         "projectName": "ClassMindAPI",
-        "projectPath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\ClassMindAPI.csproj",
+        "projectPath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\ClassMindAPI.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\obj\\",
+        "outputPath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

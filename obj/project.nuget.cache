@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xuJRtK6FCusJr/M/uakI4JyLg9jAxzL/p8VNXIts0oYhgcVtfvaRqwf6k2lRrsUXZYLScJdnGBmTGaqXD8GtEg==",
+  "dgSpecHash": "Nkgg+y8qZXnPuF9X9iyGYYlPaVRrrzIz/HY+0NnK0//DJGnm/xYredOmidotyO+693SgWclClqatCNIzeSjbBg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\5H_WebAPI_RebattoA\\ClassMindAPI.csproj",
+  "projectFilePath": "C:\\Users\\HP\\Documents\\Informatica\\C#\\Quinto anno\\ClassMind API\\ClassMindAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\HP\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.4\\microsoft.aspnetcore.openapi.8.0.4.nupkg.sha512",

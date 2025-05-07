@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClassMindAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8c7d3ed5cc0db0e2d94765dc90d2df5ae29a23d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a1dd774bb3e910f3b83835d6f3ea64958936f55")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClassMindAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClassMindAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

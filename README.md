@@ -1,4 +1,7 @@
 # ClassMind API
+Si tratta di un'API relativamente semplice scritta per un progetto scolastico e che dovrebbe
+aiutare a gestire delle **interrogazioni programmate** per una classe, prevedendo anche eventuali
+imprevisti(es. impossibilità a interrogare o si decide di saltare un giorno)
 
 Di seguito sono riportati tutti gli endpoint e il formato di richiesta per ciascuno di essi.
 
